@@ -18,6 +18,7 @@ class Enemy(pg.sprite.Sprite):
     self.rect = self.image.get_rect()
     self.rect.center = self.pos
 
+
   def update(self, world):
     self.move(world)
     self.rotate()

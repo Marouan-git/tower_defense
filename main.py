@@ -1,9 +1,12 @@
 import pygame as pg
 import json
 from Model.Enemy.enemy import Enemy
-from Controller.world import World
+from Model.world import World
 from Model.Turret.turret import Turret
 from View.button import Button
+from View.world_view import WorldView
+from View.turret_view import TurretView
+from View.enemy_view import EnemyView
 import constants as c
 
 #initialise pygame
@@ -32,6 +35,7 @@ turret_spritesheets = []
 for x in range(1, c.TURRET_LEVELS + 1):
   turret_sheet = pg.image.load(f'assets/images/turrets/turret_{x}.png').convert_alpha()
   turret_spritesheets.append(turret_sheet)
+
 #individual turret image for mouse cursor
 cursor_turret = pg.image.load('assets/images/turrets/cursor_turret.png').convert_alpha()
 #enemies
@@ -70,6 +74,7 @@ def draw_text(text, font, text_col, x, y):
   img = font.render(text, True, text_col)
   screen.blit(img, (x, y))
 
+
 def display_data():
   #draw panel
   pg.draw.rect(screen, "maroon", (c.SCREEN_WIDTH, 0, c.SIDE_PANEL, c.SCREEN_HEIGHT))
@@ -99,6 +104,10 @@ def create_turret(mouse_pos):
     if space_is_free == True:
       new_turret = Turret(turret_spritesheets, mouse_tile_x, mouse_tile_y, shot_fx)
       turret_group.add(new_turret)
+      # Create TurretView instance
+      new_turret_view = TurretView(new_turret, turret_spritesheets)
+      turret_view_group.add(new_turret_view)
+
       #deduct cost of turret
       world.money -= c.BUY_COST
 
@@ -113,14 +122,22 @@ def clear_selection():
   for turret in turret_group:
     turret.selected = False
 
-#create world
-world = World(world_data, map_image)
+
+
+# Create World instance
+world = World(world_data)
 world.process_data()
 world.process_enemies()
 
+# Create WorldView instance
+world_view = WorldView(world, map_image)
+
 #create groups
 enemy_group = pg.sprite.Group()
+enemy_view_group = pg.sprite.Group()
 turret_group = pg.sprite.Group()
+# Create a group for turret views
+turret_view_group = pg.sprite.Group()
 
 #create buttons
 turret_button = Button(c.SCREEN_WIDTH + 30, 120, buy_turret_image, True)
@@ -153,6 +170,9 @@ while run:
     #update groups
     enemy_group.update(world)
     turret_group.update(enemy_group, world)
+    # Update turret views
+    for turret_view in turret_view_group:
+        turret_view.update()
 
     #highlight selected turret
     if selected_turret:
@@ -162,13 +182,21 @@ while run:
   # DRAWING SECTION
   #########################
 
-  #draw level
-  world.draw(screen)
+  # Replace world.draw(screen) with:
+  world_view.draw(screen)
 
   #draw groups
-  enemy_group.draw(screen)
-  for turret in turret_group:
-    turret.draw(screen)
+  #enemy_group.draw(screen)
+  for enemy_view in enemy_view_group:
+    enemy_view.draw(screen)
+
+  
+
+  # Drawing turrets section
+  for turret_view in turret_view_group:
+      turret_view.draw(screen)
+
+  
 
   display_data()
 
@@ -188,6 +216,9 @@ while run:
           enemy_type = world.enemy_list[world.spawned_enemies]
           enemy = Enemy(enemy_type, world.waypoints, enemy_images)
           enemy_group.add(enemy)
+          # Create EnemyView instance
+          enemy_view = EnemyView(enemy, enemy_images[enemy_type])
+          enemy_view_group.add(enemy_view)
           world.spawned_enemies += 1
           last_enemy_spawn = pg.time.get_ticks()
 

@@ -4,7 +4,7 @@ import constants as c
 from Model.Enemy.enemy_data import ENEMY_SPAWN_DATA
 
 class World():
-  def __init__(self, data, map_image):
+  def __init__(self, data):
     self.level = 1
     self.game_speed = 1
     self.health = c.HEALTH
@@ -12,7 +12,7 @@ class World():
     self.tile_map = []
     self.waypoints = []
     self.level_data = data
-    self.image = map_image
+    self.image = None
     self.enemy_list = []
     self.spawned_enemies = 0
     self.killed_enemies = 0
@@ -54,6 +54,3 @@ class World():
     self.spawned_enemies = 0
     self.killed_enemies = 0
     self.missed_enemies = 0
-
-  def draw(self, surface):
-    surface.blit(self.image, (0, 0))
