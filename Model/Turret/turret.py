@@ -80,13 +80,13 @@ class Turret(pg.sprite.Sprite):
   #       self.last_shot = pg.time.get_ticks()
   #       self.target = None
 
-  def upgrade(self):
+  def upgrade(self, sprite_sheets, frame_index=0):
     self.upgrade_level += 1
     self.range = TURRET_DATA[self.upgrade_level - 1].get("range")
     self.cooldown = TURRET_DATA[self.upgrade_level - 1].get("cooldown")
     #upgrade turret image
-    self.animation_list = self.load_images(self.sprite_sheets[self.upgrade_level - 1])
-    self.original_image = self.animation_list[self.frame_index]
+    self.animation_list = self.load_images(sprite_sheets[self.upgrade_level - 1])
+    self.original_image = self.animation_list[frame_index]
 
     #upgrade range circle
     self.range_image = pg.Surface((self.range * 2, self.range * 2))

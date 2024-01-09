@@ -53,6 +53,8 @@ class GameController:
                 self.world.money -= c.BUY_COST
                 self.placing_turrets = False
 
+
+
     def select_turret(self, mouse_pos):
         self.clear_selection()
         mouse_tile_x = mouse_pos[0] // c.TILE_SIZE
@@ -63,18 +65,35 @@ class GameController:
                 turret.selected = True
                 break
 
+  
+
     def clear_selection(self):
         for turret in self.turret_group:
             turret.selected = False
 
     def update(self):
         if not self.game_over:
+            # check if player has lost
+            if self.world.health <= 0:
+                self.game_over = True
+                self.game_outcome = -1  # loss
+            # check if player has won
+            if self.world.level > c.TOTAL_LEVELS:
+                self.game_over = True
+                self.game_outcome = 1  # win
+
             self.spawn_enemies()
             self.check_level_completion()
             self.enemy_group.update(self.world)
             self.turret_group.update(self.enemy_group, self.world)
             for turret_view in self.turret_view_group:
                 turret_view.update()
+           
+            # highlight selected turret
+            if self.selected_turret:
+                self.selected_turret.selected = True
+
+
 
     def spawn_enemies(self):
         if self.level_started and pg.time.get_ticks() - self.last_enemy_spawn > c.SPAWN_COOLDOWN:
@@ -99,6 +118,29 @@ class GameController:
     def draw(self, screen):
         self.world_view.draw(screen)
         for enemy_view in self.enemy_view_group:
-            enemy_view.draw(screen)
+            if enemy_view.enemy.health > 0:
+                enemy_view.draw(screen)
         for turret_view in self.turret_view_group:
             turret_view.draw(screen)
+
+    def start_and_fastforward(self, screen, begin_button, fast_forward_button):
+        # check if the level has been started or not
+        if self.level_started == False:
+            if begin_button.draw(screen):
+                self.level_started = True
+        else:
+            # fast forward option
+            self.world.game_speed = 1
+            if fast_forward_button.draw(screen):
+                self.world.game_speed = 2
+
+    def restart(self):
+        self.game_over = False
+        self.level_started = False
+        self.placing_turrets = False
+        self.selected_turret = None
+        self.world.process_data()
+        self.world.process_enemies()
+        # empty groups
+        self.enemy_group.empty()
+        self.turret_group.empty()

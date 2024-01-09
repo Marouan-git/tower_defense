@@ -8,6 +8,7 @@ from View.world_view import WorldView
 from View.turret_view import TurretView
 from View.enemy_view import EnemyView
 import constants as c
+from Controller.game_controller import GameController
 
 # initialise pygame
 pg.init()
@@ -17,13 +18,13 @@ clock = pg.time.Clock()
 
 # create game window
 screen = pg.display.set_mode((c.SCREEN_WIDTH + c.SIDE_PANEL, c.SCREEN_HEIGHT))
-pg.display.set_caption("Tower Defence")
+pg.display.set_caption("MS Defence")
 
 # game variables
 game_over = False
 game_outcome = 0  # -1 is loss & 1 is win
 level_started = False
-last_enemy_spawn = pg.time.get_ticks()
+#last_enemy_spawn = pg.time.get_ticks()
 placing_turrets = False
 selected_turret = None
 
@@ -78,7 +79,6 @@ large_font = pg.font.SysFont("Consolas", 36)
 
 # function for outputting text onto the screen
 
-
 def draw_text(text, font, text_col, x, y):
     img = font.render(text, True, text_col)
     screen.blit(img, (x, y))
@@ -98,43 +98,6 @@ def display_data():
     screen.blit(coin_image, (c.SCREEN_WIDTH + 10, 65))
     draw_text(str(world.money), text_font, "grey100", c.SCREEN_WIDTH + 50, 70)
 
-
-def create_turret(mouse_pos):
-    mouse_tile_x = mouse_pos[0] // c.TILE_SIZE
-    mouse_tile_y = mouse_pos[1] // c.TILE_SIZE
-    # calculate the sequential number of the tile
-    mouse_tile_num = (mouse_tile_y * c.COLS) + mouse_tile_x
-    # check if that tile is grass
-    if world.tile_map[mouse_tile_num] == 7:
-        # check that there isn't already a turret there
-        space_is_free = True
-        for turret in turret_group:
-            if (mouse_tile_x, mouse_tile_y) == (turret.tile_x, turret.tile_y):
-                space_is_free = False
-        # if it is a free space then create turret
-        if space_is_free == True:
-            new_turret = Turret(turret_spritesheets,
-                                mouse_tile_x, mouse_tile_y, shot_fx)
-            turret_group.add(new_turret)
-            # Create TurretView instance
-            new_turret_view = TurretView(new_turret, turret_spritesheets)
-            turret_view_group.add(new_turret_view)
-
-            # deduct cost of turret
-            world.money -= c.BUY_COST
-
-
-def select_turret(mouse_pos):
-    mouse_tile_x = mouse_pos[0] // c.TILE_SIZE
-    mouse_tile_y = mouse_pos[1] // c.TILE_SIZE
-    for turret in turret_group:
-        if (mouse_tile_x, mouse_tile_y) == (turret.tile_x, turret.tile_y):
-            return turret
-
-
-def clear_selection():
-    for turret in turret_group:
-        turret.selected = False
 
 
 # Create World instance
@@ -161,6 +124,9 @@ restart_button = Button(310, 300, restart_image, True)
 fast_forward_button = Button(
     c.SCREEN_WIDTH + 50, 300, fast_forward_image, False)
 
+# Initialize GameController
+game_controller = GameController(world, world_view, enemy_group, enemy_view_group, turret_group, turret_view_group, enemy_images, turret_spritesheets, shot_fx)
+
 # game loop
 run = True
 while run:
@@ -171,77 +137,18 @@ while run:
     # UPDATING SECTION
     #########################
 
-    if game_over == False:
-        # check if player has lost
-        if world.health <= 0:
-            game_over = True
-            game_outcome = -1  # loss
-        # check if player has won
-        if world.level > c.TOTAL_LEVELS:
-            game_over = True
-            game_outcome = 1  # win
-
-        # update groups
-        enemy_group.update(world)
-        turret_group.update(enemy_group, world)
-        # Update turret views
-        for turret_view in turret_view_group:
-            turret_view.update()
-
-        # highlight selected turret
-        if selected_turret:
-            selected_turret.selected = True
+    game_controller.update()
 
     #########################
     # DRAWING SECTION
     #########################
-
-    # Replace world.draw(screen) with:
-    world_view.draw(screen)
-
-    # draw groups
-    # enemy_group.draw(screen)
-    for enemy_view in enemy_view_group:
-        if enemy_view.enemy.health > 0:
-            enemy_view.draw(screen)
-
-    # Drawing turrets section
-    for turret_view in turret_view_group:
-        turret_view.draw(screen)
+    
+    game_controller.draw(screen)
 
     display_data()
 
-    if game_over == False:
-        # check if the level has been started or not
-        if level_started == False:
-            if begin_button.draw(screen):
-                level_started = True
-        else:
-            # fast forward option
-            world.game_speed = 1
-            if fast_forward_button.draw(screen):
-                world.game_speed = 2
-            # spawn enemies
-            if pg.time.get_ticks() - last_enemy_spawn > c.SPAWN_COOLDOWN:
-                if world.spawned_enemies < len(world.enemy_list):
-                    enemy_type = world.enemy_list[world.spawned_enemies]
-                    enemy = Enemy(enemy_type, world.waypoints, enemy_images)
-                    enemy_group.add(enemy)
-                    # Create EnemyView instance
-                    enemy_view = EnemyView(enemy, enemy_images[enemy_type])
-                    enemy_view_group.add(enemy_view)
-                    world.spawned_enemies += 1
-                    last_enemy_spawn = pg.time.get_ticks()
-
-        # check if the wave is finished
-        if world.check_level_complete() == True:
-            world.money += c.LEVEL_COMPLETE_REWARD
-            world.level += 1
-            level_started = False
-            last_enemy_spawn = pg.time.get_ticks()
-            world.reset_level()
-            world.process_enemies()
-
+    if game_controller.game_over == False:
+        game_controller.start_and_fastforward(screen, begin_button, fast_forward_button)
         # draw buttons
         # button for placing turrets
         # for the "turret button" show cost of turret and draw the button
@@ -249,9 +156,9 @@ while run:
                   "grey100", c.SCREEN_WIDTH + 215, 135)
         screen.blit(coin_image, (c.SCREEN_WIDTH + 260, 130))
         if turret_button.draw(screen):
-            placing_turrets = True
+            game_controller.placing_turrets = True
         # if placing turrets then show the cancel button as well
-        if placing_turrets == True:
+        if game_controller.placing_turrets == True:
             # show cursor turret
             cursor_rect = cursor_turret.get_rect()
             cursor_pos = pg.mouse.get_pos()
@@ -259,59 +166,41 @@ while run:
             if cursor_pos[0] <= c.SCREEN_WIDTH:
                 screen.blit(cursor_turret, cursor_rect)
             if cancel_button.draw(screen):
-                placing_turrets = False
+                game_controller.placing_turrets = False
         # if a turret is selected then show the upgrade button
-        if selected_turret:
+        if game_controller.selected_turret:
             # if a turret can be upgraded then show the upgrade button
-            if selected_turret.upgrade_level < c.TURRET_LEVELS:
+            if game_controller.selected_turret.upgrade_level < c.TURRET_LEVELS:
                 # show cost of upgrade and draw the button
                 draw_text(str(c.UPGRADE_COST), text_font,
                           "grey100", c.SCREEN_WIDTH + 215, 195)
                 screen.blit(coin_image, (c.SCREEN_WIDTH + 260, 190))
                 if upgrade_button.draw(screen):
-                    if world.money >= c.UPGRADE_COST:
-                        selected_turret.upgrade()
-                        world.money -= c.UPGRADE_COST
+                    if game_controller.world.money >= c.UPGRADE_COST:
+                        game_controller.selected_turret.upgrade(turret_spritesheets)
+                        game_controller.world.money -= c.UPGRADE_COST
     else:
         pg.draw.rect(screen, "dodgerblue",
                      (200, 200, 400, 200), border_radius=30)
-        if game_outcome == -1:
+        if game_controller.game_outcome == -1:
             draw_text("GAME OVER", large_font, "grey0", 310, 230)
-        elif game_outcome == 1:
+        elif game_controller.game_outcome == 1:
             draw_text("YOU WIN!", large_font, "grey0", 315, 230)
+
         # restart level
+
         if restart_button.draw(screen):
-            game_over = False
-            level_started = False
-            placing_turrets = False
-            selected_turret = None
-            last_enemy_spawn = pg.time.get_ticks()
-            world = World(world_data, map_image)
-            world.process_data()
-            world.process_enemies()
-            # empty groups
-            enemy_group.empty()
-            turret_group.empty()
+            game_controller.world = World(world_data, map_image)
+            game_controller.restart()
 
     # event handler
     for event in pg.event.get():
         # quit program
         if event.type == pg.QUIT:
             run = False
+
         # mouse click
-        if event.type == pg.MOUSEBUTTONDOWN and event.button == 1:
-            mouse_pos = pg.mouse.get_pos()
-            # check if mouse is on the game area
-            if mouse_pos[0] < c.SCREEN_WIDTH and mouse_pos[1] < c.SCREEN_HEIGHT:
-                # clear selected turrets
-                selected_turret = None
-                clear_selection()
-                if placing_turrets == True:
-                    # check if there is enough money for a turret
-                    if world.money >= c.BUY_COST:
-                        create_turret(mouse_pos)
-                else:
-                    selected_turret = select_turret(mouse_pos)
+        game_controller.handle_events(event)
 
     # update display
     pg.display.flip()
