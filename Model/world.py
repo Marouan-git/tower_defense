@@ -4,11 +4,12 @@ import constants as c
 from Model.Enemy.enemy_data import ENEMY_SPAWN_DATA
 
 class World():
-  def __init__(self, data):
+  def __init__(self, data, constants):
     self.level = 1
     self.game_speed = 1
-    self.health = c.HEALTH
-    self.money = c.MONEY
+    self.constants = constants
+    self.health = self.constants.HEALTH
+    self.money = self.constants.MONEY
     self.tile_map = []
     self.waypoints = []
     self.level_data = data

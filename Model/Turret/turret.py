@@ -1,10 +1,9 @@
 import pygame as pg
 import math
-import constants as c
 from Model.Turret.turret_data import TURRET_DATA
 
 class Turret(pg.sprite.Sprite):
-  def __init__(self, sprite_sheets, tile_x, tile_y, shot_fx):
+  def __init__(self, sprite_sheets, tile_x, tile_y, shot_fx, constants):
         pg.sprite.Sprite.__init__(self)
         self.upgrade_level = 1
         self.range = TURRET_DATA[self.upgrade_level - 1].get("range")
@@ -13,11 +12,13 @@ class Turret(pg.sprite.Sprite):
         self.selected = False
         self.target = None
 
+        self.constants = constants
+
         # Position variables
         self.tile_x = tile_x
         self.tile_y = tile_y
-        self.x = (self.tile_x + 0.5) * c.TILE_SIZE
-        self.y = (self.tile_y + 0.5) * c.TILE_SIZE
+        self.x = (self.tile_x + 0.5) * constants.TILE_SIZE
+        self.y = (self.tile_y + 0.5) * constants.TILE_SIZE
 
         # Sound effect
         self.shot_fx = shot_fx
@@ -32,7 +33,7 @@ class Turret(pg.sprite.Sprite):
     #extract images from spritesheet
     size = sprite_sheet.get_height()
     animation_list = []
-    for x in range(c.ANIMATION_STEPS):
+    for x in range(self.constants.ANIMATION_STEPS):
       temp_img = sprite_sheet.subsurface(x * size, 0, size, size)
       animation_list.append(temp_img)
     return animation_list
@@ -61,7 +62,7 @@ class Turret(pg.sprite.Sprite):
           self.target = enemy
           self.angle = math.degrees(math.atan2(-y_dist, x_dist))
           #damage enemy
-          self.target.health -= c.DAMAGE
+          self.target.health -= self.constants.DAMAGE
           #play sound effect
           self.shot_fx.play()
           break
@@ -70,7 +71,7 @@ class Turret(pg.sprite.Sprite):
   #   #update image
   #   self.original_image = self.animation_list[self.frame_index]
   #   #check if enough time has passed since the last update
-  #   if pg.time.get_ticks() - self.update_time > c.ANIMATION_DELAY:
+  #   if pg.time.get_ticks() - self.update_time > constants.ANIMATION_DELAY:
   #     self.update_time = pg.time.get_ticks()
   #     self.frame_index += 1
   #     #check if the animation has finished and reset to idle

@@ -5,7 +5,7 @@ import constants as c
 from Model.Enemy.enemy_data import ENEMY_DATA
 
 class Enemy(pg.sprite.Sprite):
-  def __init__(self, enemy_type, waypoints, images):
+  def __init__(self, enemy_type, waypoints, images, constants):
     pg.sprite.Sprite.__init__(self)
     self.waypoints = waypoints
     self.pos = Vector2(self.waypoints[0])
@@ -17,6 +17,7 @@ class Enemy(pg.sprite.Sprite):
     self.image = pg.transform.rotate(self.original_image, self.angle)
     self.rect = self.image.get_rect()
     self.rect.center = self.pos
+    self.constants = constants
 
 
   def update(self, world):
@@ -58,5 +59,5 @@ class Enemy(pg.sprite.Sprite):
   def check_alive(self, world):
     if self.health <= 0:
       world.killed_enemies += 1
-      world.money += c.KILL_REWARD
+      world.money += self.constants.KILL_REWARD
       self.kill()
