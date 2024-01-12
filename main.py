@@ -19,14 +19,15 @@ clock = pg.time.Clock()
 constants = GameConstants()
 
 # create game window
-screen = pg.display.set_mode((constants.SCREEN_WIDTH + constants.SIDE_PANEL, constants.SCREEN_HEIGHT))
+screen = pg.display.set_mode(
+    (constants.SCREEN_WIDTH + constants.SIDE_PANEL, constants.SCREEN_HEIGHT))
 pg.display.set_caption("MS Defence")
 
 # game variables
 game_over = False
 game_outcome = 0  # -1 is loss & 1 is win
 level_started = False
-#last_enemy_spawn = pg.time.get_ticks()
+# last_enemy_spawn = pg.time.get_ticks()
 placing_turrets = False
 selected_turret = None
 
@@ -39,7 +40,7 @@ for x in range(1, constants.TURRET_LEVELS + 1):
     turret_sheet = pg.image.load(
         f'assets/images/turrets/turret_{x}.png').convert_alpha()
     turret_spritesheets.append(turret_sheet)
-
+    print(f"Loaded turret_{x}.png")
 # individual turret image for mouse cursor
 cursor_turret = pg.image.load(
     'assets/images/turrets/cursor_turret.png').convert_alpha()
@@ -81,6 +82,7 @@ large_font = pg.font.SysFont("Consolas", 36)
 
 # function for outputting text onto the screen
 
+
 def draw_text(text, font, text_col, x, y):
     img = font.render(text, True, text_col)
     screen.blit(img, (x, y))
@@ -90,16 +92,18 @@ def display_data():
     # draw panel
     pg.draw.rect(screen, "maroon", (constants.SCREEN_WIDTH,
                  0, constants.SIDE_PANEL, constants.SCREEN_HEIGHT))
-    pg.draw.rect(screen, "grey0", (constants.SCREEN_WIDTH, 0, constants.SIDE_PANEL, 400), 2)
+    pg.draw.rect(screen, "grey0", (constants.SCREEN_WIDTH,
+                 0, constants.SIDE_PANEL, 400), 2)
     screen.blit(logo_image, (constants.SCREEN_WIDTH, 400))
     # display data
     draw_text("LEVEL: " + str(world.level), text_font,
               "grey100", constants.SCREEN_WIDTH + 10, 10)
     screen.blit(heart_image, (constants.SCREEN_WIDTH + 10, 35))
-    draw_text(str(world.health), text_font, "grey100", constants.SCREEN_WIDTH + 50, 40)
+    draw_text(str(world.health), text_font, "grey100",
+              constants.SCREEN_WIDTH + 50, 40)
     screen.blit(coin_image, (constants.SCREEN_WIDTH + 10, 65))
-    draw_text(str(world.money), text_font, "grey100", constants.SCREEN_WIDTH + 50, 70)
-
+    draw_text(str(world.money), text_font, "grey100",
+              constants.SCREEN_WIDTH + 50, 70)
 
 
 # Create World instance
@@ -118,16 +122,19 @@ turret_group = pg.sprite.Group()
 turret_view_group = pg.sprite.Group()
 
 # create buttons
-turret_button = Button(constants.SCREEN_WIDTH + 30, 120, buy_turret_image, True)
+turret_button = Button(constants.SCREEN_WIDTH + 30,
+                       120, buy_turret_image, True)
 cancel_button = Button(constants.SCREEN_WIDTH + 50, 180, cancel_image, True)
-upgrade_button = Button(constants.SCREEN_WIDTH + 5, 180, upgrade_turret_image, True)
+upgrade_button = Button(constants.SCREEN_WIDTH + 5,
+                        180, upgrade_turret_image, True)
 begin_button = Button(constants.SCREEN_WIDTH + 60, 300, begin_image, True)
 restart_button = Button(310, 300, restart_image, True)
 fast_forward_button = Button(
     constants.SCREEN_WIDTH + 50, 300, fast_forward_image, False)
 
 # Initialize GameController
-game_controller = GameController(world, world_view, enemy_group, enemy_view_group, turret_group, turret_view_group, enemy_images, turret_spritesheets, shot_fx, constants)
+game_controller = GameController(world, world_view, enemy_group, enemy_view_group,
+                                 turret_group, turret_view_group, enemy_images, turret_spritesheets, shot_fx, constants)
 
 # game loop
 run = True
@@ -144,13 +151,14 @@ while run:
     #########################
     # DRAWING SECTION
     #########################
-    
+
     game_controller.draw(screen)
 
     display_data()
 
     if game_controller.game_over == False:
-        game_controller.start_and_fastforward(screen, begin_button, fast_forward_button)
+        game_controller.start_and_fastforward(
+            screen, begin_button, fast_forward_button)
         # draw buttons
         # button for placing turrets
         # for the "turret button" show cost of turret and draw the button
@@ -179,7 +187,8 @@ while run:
                 screen.blit(coin_image, (constants.SCREEN_WIDTH + 260, 190))
                 if upgrade_button.draw(screen):
                     if game_controller.world.money >= constants.UPGRADE_COST:
-                        game_controller.selected_turret.upgrade(turret_spritesheets)
+                        game_controller.selected_turret.upgrade(
+                            turret_spritesheets)
                         game_controller.world.money -= constants.UPGRADE_COST
     else:
         pg.draw.rect(screen, "dodgerblue",
@@ -202,9 +211,15 @@ while run:
             run = False
 
         # mouse click
-        game_controller.handle_events(event)
+    # mouse click
+        if not game_controller.game_over:
+            if not game_controller.turret_selected_this_event:
+                game_controller.handle_events(event)
+                game_controller.turret_selected_this_event = True
+            else:
+                game_controller.turret_selected_this_event = False
 
     # update display
     pg.display.flip()
 
-pg.quit
+pg.quit()
