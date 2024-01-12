@@ -1,7 +1,6 @@
 import pygame as pg
 from pygame.math import Vector2
 import math
-import constants as c
 from Model.Enemy.enemy_data import ENEMY_DATA
 
 class Enemy(pg.sprite.Sprite):

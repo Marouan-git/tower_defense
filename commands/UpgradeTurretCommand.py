@@ -1,6 +1,5 @@
 # commands/UpgradeTurretCommand.py
 from commands.commands import Command
-import constants as c
 
 
 class UpgradeTurretCommand(Command):

@@ -1,6 +1,5 @@
 import pygame as pg
 import random
-import constants as c
 from Model.Enemy.enemy_data import ENEMY_SPAWN_DATA
 
 class World():

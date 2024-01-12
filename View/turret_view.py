@@ -1,5 +1,4 @@
 import pygame as pg
-import constants as c
 
 
 class TurretView(pg.sprite.Sprite):
@@ -17,8 +16,7 @@ class TurretView(pg.sprite.Sprite):
                        (self.turret.range, self.turret.range), self.turret.range)
 
     def load_images(self):
-        print(f"Loading images for Turret upgrade level: {
-              self.turret.upgrade_level}")
+        print(f"Loading images for Turret upgrade level: {self.turret.upgrade_level}")
 
         size = self.sprite_sheets[0].get_height()
         animation_list = []
@@ -40,6 +38,7 @@ class TurretView(pg.sprite.Sprite):
             range_rect = self.range_image.get_rect(
                 center=(self.turret.x, self.turret.y))
             surface.blit(self.range_image, range_rect)
+
 
     def update(self):
         # Logic to update the frame index for animation
