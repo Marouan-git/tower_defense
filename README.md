@@ -3,7 +3,7 @@
 ## Installation
 Installer le package :
 ```
-python -m pip install --editable .
+python -m pip install --user .
 ```
 
 ## Démarrer le jeu
