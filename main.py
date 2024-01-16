@@ -9,6 +9,8 @@ from View.turret_view import TurretView
 from View.enemy_view import EnemyView
 from Constants.constants import GameConstants
 from Controller.game_controller import GameController
+from Factory.TurretFactory import TurretFactory
+from Factory.create_turret import BasicTurretFactory
 
 
 def main():
@@ -60,7 +62,8 @@ def main():
         'assets/images/buttons/cancel.png').convert_alpha()
     upgrade_turret_image = pg.image.load(
         'assets/images/buttons/upgrade_turret.png').convert_alpha()
-    begin_image = pg.image.load('assets/images/buttons/begin.png').convert_alpha()
+    begin_image = pg.image.load(
+        'assets/images/buttons/begin.png').convert_alpha()
     restart_image = pg.image.load(
         'assets/images/buttons/restart.png').convert_alpha()
     fast_forward_image = pg.image.load(
@@ -84,29 +87,26 @@ def main():
 
     # function for outputting text onto the screen
 
-
     def draw_text(text, font, text_col, x, y):
         img = font.render(text, True, text_col)
         screen.blit(img, (x, y))
 
-
     def display_data():
         # draw panel
         pg.draw.rect(screen, "maroon", (constants.SCREEN_WIDTH,
-                    0, constants.SIDE_PANEL, constants.SCREEN_HEIGHT))
+                                        0, constants.SIDE_PANEL, constants.SCREEN_HEIGHT))
         pg.draw.rect(screen, "grey0", (constants.SCREEN_WIDTH,
-                    0, constants.SIDE_PANEL, 400), 2)
+                                       0, constants.SIDE_PANEL, 400), 2)
         screen.blit(logo_image, (constants.SCREEN_WIDTH, 400))
         # display data
         draw_text("LEVEL: " + str(world.level), text_font,
-                "grey100", constants.SCREEN_WIDTH + 10, 10)
+                  "grey100", constants.SCREEN_WIDTH + 10, 10)
         screen.blit(heart_image, (constants.SCREEN_WIDTH + 10, 35))
         draw_text(str(world.health), text_font, "grey100",
-                constants.SCREEN_WIDTH + 50, 40)
+                  constants.SCREEN_WIDTH + 50, 40)
         screen.blit(coin_image, (constants.SCREEN_WIDTH + 10, 65))
         draw_text(str(world.money), text_font, "grey100",
-                constants.SCREEN_WIDTH + 50, 70)
-
+                  constants.SCREEN_WIDTH + 50, 70)
 
     # Create World instance
     world = World(world_data, constants)
@@ -125,8 +125,9 @@ def main():
 
     # create buttons
     turret_button = Button(constants.SCREEN_WIDTH + 30,
-                        120, buy_turret_image, True)
-    cancel_button = Button(constants.SCREEN_WIDTH + 50, 180, cancel_image, True)
+                           120, buy_turret_image, True)
+    cancel_button = Button(constants.SCREEN_WIDTH +
+                           50, 180, cancel_image, True)
     upgrade_button = Button(constants.SCREEN_WIDTH + 5,
                             180, upgrade_turret_image, True)
     begin_button = Button(constants.SCREEN_WIDTH + 60, 300, begin_image, True)
@@ -136,7 +137,7 @@ def main():
 
     # Initialize GameController
     game_controller = GameController(world, world_view, enemy_group, enemy_view_group,
-                                    turret_group, turret_view_group, enemy_images, turret_spritesheets, shot_fx, constants)
+                                     turret_group, turret_view_group, enemy_images, turret_spritesheets, shot_fx, constants, BasicTurretFactory())
 
     # game loop
     run = True
@@ -165,7 +166,7 @@ def main():
             # button for placing turrets
             # for the "turret button" show cost of turret and draw the button
             draw_text(str(constants.BUY_COST), text_font,
-                    "grey100", constants.SCREEN_WIDTH + 215, 135)
+                      "grey100", constants.SCREEN_WIDTH + 215, 135)
             screen.blit(coin_image, (constants.SCREEN_WIDTH + 260, 130))
             if turret_button.draw(screen):
                 game_controller.placing_turrets = True
@@ -185,8 +186,9 @@ def main():
                 if game_controller.selected_turret.upgrade_level < constants.TURRET_LEVELS:
                     # show cost of upgrade and draw the button
                     draw_text(str(constants.UPGRADE_COST), text_font,
-                            "grey100", constants.SCREEN_WIDTH + 215, 195)
-                    screen.blit(coin_image, (constants.SCREEN_WIDTH + 260, 190))
+                              "grey100", constants.SCREEN_WIDTH + 215, 195)
+                    screen.blit(
+                        coin_image, (constants.SCREEN_WIDTH + 260, 190))
                     if upgrade_button.draw(screen):
                         if game_controller.world.money >= constants.UPGRADE_COST:
                             game_controller.selected_turret.upgrade(
@@ -194,7 +196,7 @@ def main():
                             game_controller.world.money -= constants.UPGRADE_COST
         else:
             pg.draw.rect(screen, "dodgerblue",
-                        (200, 200, 400, 200), border_radius=30)
+                         (200, 200, 400, 200), border_radius=30)
             if game_controller.game_outcome == -1:
                 draw_text("GAME OVER", large_font, "grey0", 310, 230)
             elif game_controller.game_outcome == 1:
@@ -225,6 +227,7 @@ def main():
         pg.display.flip()
 
     pg.quit()
+
 
 if __name__ == "__main__":
     main()

@@ -6,12 +6,14 @@ from Model.Turret.turret import Turret
 from View.turret_view import TurretView
 from commands.BuildTurretCommand import BuildTurretCommand
 from commands.UpgradeTurretCommand import UpgradeTurretCommand
+from Factory.TurretFactory import TurretFactory
 
 
 class GameController:
-    def __init__(self, world, world_view, enemy_group, enemy_view_group, turret_group, turret_view_group, enemy_images, turret_spritesheets, shot_fx, constants):
+    def __init__(self, world, world_view, enemy_group, enemy_view_group, turret_group, turret_view_group, enemy_images, turret_spritesheets, shot_fx, constants, turret_factory: TurretFactory):
         self.world = world
         self.world_view = world_view
+        self.turret_factory = turret_factory
         self.enemy_group = enemy_group
         self.enemy_view_group = enemy_view_group
         self.turret_group = turret_group
@@ -140,3 +142,7 @@ class GameController:
         # empty groups
         self.enemy_group.empty()
         self.turret_group.empty()
+
+    def handle_turret_placement(self, tile_x, tile_y):
+        new_turret = self.turret_factory.create_turret(
+            tile_x, tile_y, self.shot_fx, self.constants)
