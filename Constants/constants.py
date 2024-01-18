@@ -14,7 +14,7 @@ class GameConstants:
             cls.FPS = 60
             cls.HEALTH = 100
             cls.MONEY = 650
-            cls.TOTAL_LEVELS = 15
+            cls.TOTAL_LEVELS = 10
 
             # Enemy constants
             cls.SPAWN_COOLDOWN = 400
