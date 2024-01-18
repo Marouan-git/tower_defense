@@ -44,7 +44,6 @@ def main():
         turret_sheet = pg.image.load(
             f'assets/images/turrets/turret_{x}.png').convert_alpha()
         turret_spritesheets.append(turret_sheet)
-        print(f"Loaded turret_{x}.png")
     # individual turret image for mouse cursor
     cursor_turret = pg.image.load(
         'assets/images/turrets/cursor_turret.png').convert_alpha()
@@ -77,6 +76,12 @@ def main():
     shot_fx = pg.mixer.Sound('assets/audio/shot.wav')
     shot_fx.set_volume(0.5)
 
+    bg_music = pg.mixer.Sound('assets/audio/backsound.wav')
+    bg_music.set_volume(0.2)  # Adjust the volume as needed
+    bg_music.play(-1)  # -1 means the music will loop indefinitely
+
+    pg.mixer.music.get_busy()
+
     # load json data for level
     with open('levels/level.tmj') as file:
         world_data = json.load(file)
@@ -93,7 +98,7 @@ def main():
 
     def display_data():
         # draw panel
-        pg.draw.rect(screen, "maroon", (constants.SCREEN_WIDTH,
+        pg.draw.rect(screen, "grey10", (constants.SCREEN_WIDTH,
                                         0, constants.SIDE_PANEL, constants.SCREEN_HEIGHT))
         pg.draw.rect(screen, "grey0", (constants.SCREEN_WIDTH,
                                        0, constants.SIDE_PANEL, 400), 2)
@@ -205,7 +210,7 @@ def main():
             # restart level
 
             if restart_button.draw(screen):
-                game_controller.world = World(world_data)
+                game_controller.world = World(world_data, constants)
                 game_controller.restart()
 
         # event handler

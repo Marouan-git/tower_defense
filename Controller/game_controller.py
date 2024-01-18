@@ -7,6 +7,7 @@ from View.turret_view import TurretView
 from commands.BuildTurretCommand import BuildTurretCommand
 from commands.UpgradeTurretCommand import UpgradeTurretCommand
 from Factory.TurretFactory import TurretFactory
+import sys
 
 
 class GameController:
@@ -139,6 +140,21 @@ class GameController:
         self.world.missed_enemies = 0
         self.world.process_data()
         self.world.process_enemies()
+        # Clear enemy and turret sprites
+        self.enemy_group.empty()
+        self.turret_group.empty()
+
+        pg.quit()
+        sys.exit()
+
+        # Clear enemy sprites
+        for enemy in self.enemy_group:
+            enemy.kill()
+
+        # Clear turret sprites
+        for turret in self.turret_group:
+            turret.kill()
+
         # empty groups
         self.enemy_group.empty()
         self.turret_group.empty()

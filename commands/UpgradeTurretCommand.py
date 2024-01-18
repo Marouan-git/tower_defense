@@ -11,7 +11,6 @@ class UpgradeTurretCommand(Command):
         self.constants = constants
 
     def execute(self):
-        print("UpgradeTurretCommand execute() called.")
         # Logic to upgrade a turret
         if self.selected_turret and self.world.money >= self.constants.UPGRADE_COST:
             self.selected_turret.upgrade(self.turret_spritesheets)

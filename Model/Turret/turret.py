@@ -79,9 +79,6 @@ class Turret(pg.sprite.Sprite):
     # Turret class
 
     def upgrade(self, sprite_sheets, frame_index=0):
-        print("Upgrading turret...")
-        print(f"Before upgrade - Upgrade level: {self.upgrade_level}, Animation list length: {len(self.animation_list)}")
-
         self.upgrade_level += 1
         old_range_rect_center = self.range_rect.center if hasattr(
             self, 'range_rect') else self.rect.center
@@ -110,5 +107,3 @@ class Turret(pg.sprite.Sprite):
         # Center the turret rect based on its position
         self.rect = self.original_image.get_rect()
         self.rect.center = (self.x, self.y)
-
-        print(f"After upgrade - Upgrade level: {self.upgrade_level}, Animation list length: {len(self.animation_list)}")
