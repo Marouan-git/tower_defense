@@ -2,6 +2,11 @@
 
 **Membres** : Marouan BOULLI et Steven ESSAM.
 
+## Prérequis
+
+Il faut avoir installé **Python** avec le gestionnaire de paquets **pip**.  
+Pip est automatiquement installé lors de l'installation de python : https://www.python.org/downloads/.
+
 ## Installation
 
 Cloner le dépôt git et se déplacer dans le répertoire du jeu : 
