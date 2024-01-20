@@ -13,7 +13,7 @@ class GameConstants:
             cls.SCREEN_HEIGHT = cls.TILE_SIZE * cls.ROWS
             cls.FPS = 60
             cls.HEALTH = 100
-            cls.MONEY = 650
+            cls.MONEY = 550
             cls.TOTAL_LEVELS = 10
 
             # Enemy constants
