@@ -1,6 +1,6 @@
 # Tower Defense
 
-**Membres** : Marouan BOULLI et Steven ESSAM.
+**Membres** : Marouan BOULLI (n°22311680) et Steven ESSAM EDWAR AZIZ (n°22309059).
 
 ## Prérequis
 
