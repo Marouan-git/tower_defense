@@ -7,6 +7,8 @@
 Il faut avoir installé **Python** avec le gestionnaire de paquets **pip**.  
 Pip est automatiquement installé lors de l'installation de python : https://www.python.org/downloads/.
 
+La démo du jeu est disponible dans le fichier vidéo [demo_video](./demo_video.mkv)
+
 ## Installation
 
 Cloner le dépôt git et se déplacer dans le répertoire du jeu : 
