@@ -10,6 +10,10 @@ Vous pouvez vérifier que Python est installé avec la commande suivante :
 python --version
 ```
 Pip est automatiquement installé lors de l'installation de python : https://www.python.org/downloads/.
+Pour vérifier si pip est installé : 
+```
+pip --version
+```
 
 La démo du jeu est disponible dans le fichier vidéo [demo_video](./demo_video.mkv)
 
